@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 
 import warnings
 import jinja2
@@ -35,7 +35,11 @@ class AssetsExtension(Extension):
         )
 
     def parse(self, parser):
-        lineno = parser.stream.next().lineno
+        try:
+            # Python 2.7
+            lineno = parser.stream.next().lineno
+        except AttributeError:
+            lineno = next(parser.stream).lineno
 
         files = []
         output = nodes.Const(None)
@@ -52,7 +56,10 @@ class AssetsExtension(Extension):
 
             # Lookahead to see if this is an assignment (an option)
             if parser.stream.current.test('name') and parser.stream.look().test('assign'):
-                name = parser.stream.next().value
+                try:
+                    name = parser.stream.next().value
+                except AttributeError:
+                    name = next(parser.stream).value
                 parser.stream.skip()
                 value = parser.parse_expression()
                 if name == 'filters':
@@ -182,7 +189,7 @@ class AssetsExtension(Extension):
 
         # For each url, execute the content of this template tag (represented
         # by the macro ```caller`` given to use by Jinja2).
-        result = u""
+        result = ""
         for url in urls:
             result += caller(url, bundle.extra)
         return result
@@ -216,7 +223,7 @@ class Jinja2Loader(GlobLoader):
         for i, env in enumerate(self.jinja2_envs):
             try:
                 t = env.parse(contents.decode(self.charset))
-            except jinja2.exceptions.TemplateSyntaxError, e:
+            except jinja2.exceptions.TemplateSyntaxError as e:
                 #print ('jinja parser (env %d) failed: %s'% (i, e))
                 pass
             else:
