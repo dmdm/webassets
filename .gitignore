@@ -1,3 +1,6 @@
+*.egg-info
+.*.swp
+.*.swo
 # Eclipse 
 /.project
 /.pydevproject
@@ -19,3 +22,4 @@
 
 *.~*
 *.pyc
+.coverage
