@@ -68,7 +68,10 @@ def make_md5(data):
             raise ValueError('Cannot MD5 type %s' % type(obj))
     md5 = md5_constructor()
     for d in walk(data):
-        md5.update(d)
+        try:
+            md5.update(d.encode('utf-8'))
+        except AttributeError:
+            md5.update(d)
     return md5.hexdigest()
 
 
@@ -179,7 +182,7 @@ class FilesystemCache(BaseCache):
             return None
         f = open(filename, 'rb')
         try:
-            result = f.read()
+            result = f.read().decode('utf-8')
         finally:
             f.close()
 
@@ -191,7 +194,7 @@ class FilesystemCache(BaseCache):
         filename = path.join(self.directory, '%s' % make_md5(key))
         f = open(filename, 'wb')
         try:
-            f.write(maybe_pickle(data))
+            f.write(maybe_pickle(data).encode('utf-8'))
         finally:
             f.close()
 
