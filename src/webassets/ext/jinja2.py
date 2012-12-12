@@ -35,7 +35,13 @@ class AssetsExtension(Extension):
         )
 
     def parse(self, parser):
-        lineno = parser.stream.next().lineno
+        try:
+            # Python 2.7
+            lineno = parser.stream.next().lineno
+        except AttributeError:
+            # Python 3
+            lineno = next(parser.stream).lineno
+
 
         files = []
         output = nodes.Const(None)
@@ -52,7 +58,10 @@ class AssetsExtension(Extension):
 
             # Lookahead to see if this is an assignment (an option)
             if parser.stream.current.test('name') and parser.stream.look().test('assign'):
-                name = parser.stream.next().value
+                try:
+                    name = parser.stream.next().value
+                except AttributeError:
+                    name = next(parser.stream).value
                 parser.stream.skip()
                 value = parser.parse_expression()
                 if name == 'filters':
