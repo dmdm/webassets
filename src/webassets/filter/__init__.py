@@ -471,7 +471,8 @@ class ExternalTool(Filter):
                     f.write(data.read() if hasattr(data, 'read') else data)
                     # No longer pass to stdin
                     data = None
-
+            if not argv: # XXX dmdm: THIS IS BAD. Solution?
+                return
             proc = subprocess.Popen(
                 argv,
                 # we cannot use the in/out streams directly, as they might be
@@ -491,7 +492,7 @@ class ExternalTool(Filter):
                     with os.fdopen(output_file.fd, 'rb') as f:
                         out.write(f.read())
                 else:
-                    out.write(stdout)
+                    out.write(stdout.decode('utf-8'))
         finally:
             if output_file.created:
                 os.unlink(output_file.filename)
