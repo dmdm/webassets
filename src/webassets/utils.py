@@ -178,7 +178,12 @@ def cmp_debug_levels(level1, level2):
     level is higher than the other one."""
     level_ints = { False: 0, 'merge': 1, True: 2 }
     try:
-        return cmp(level_ints[level1], level_ints[level2])
+        if level_ints[level1] < level_ints[level2]:
+            return -1
+        elif level_ints[level1] > level_ints[level2]:
+            return 1
+        else:
+            return 0
     except KeyError as e:
         # Not sure if a dependency on BundleError is proper here. Validating
         # debug values should probably be done on assign. But because this
