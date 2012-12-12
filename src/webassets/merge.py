@@ -6,9 +6,9 @@ import contextlib
 import urllib.request, urllib.error, urllib.parse
 import logging
 try:
-    import io as StringIO
-except:
     import io
+except:
+    import StringIO as io
 
 from .utils import cmp_debug_levels
 
@@ -152,13 +152,13 @@ class MemoryHunk(BaseHunk):
 
     def data(self):
         if hasattr(self._data, 'read'):
-            return self._data.read()
+            return self._data.read().decode('utf-8')
         return self._data
 
     def save(self, filename):
         f = open(filename, 'wb')
         try:
-            f.write(self.data())
+            f.write(self.data().encode('utf-8'))
         finally:
             f.close()
 
